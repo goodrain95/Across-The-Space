@@ -10,12 +10,20 @@ void BackGround();
 void Story();
 void Manual();
 
+
+/*void hello(int a) {
+    while (1) {
+        printf("Hello! %d", a);
+        Sleep(1000);
+    }
+}*/
+
 void main() {
     system("mode con cols=120 lines=30");
     Cursor(0);
+    //CreateThread(NULL, 0, hello, 100, NULL, 0);
     StartScreen();
     printf("end");
-    
     return 0;
 }
 
@@ -150,6 +158,7 @@ void StartScreen() {
     gotoxy(22, 5); printf("|　|__|  |   |  |     　  |  |__| |    |  |  |  |   |  |_____    |  |_____");
     gotoxy(22, 6); printf("|　 __   |   |  |____     |  ___　\\    |  |__|  |   |______  |   |______  |");
     gotoxy(22, 7); printf("|__| |___|   |_______|　  |__|  |__|   |________|   |________|   |________|");
+
     gotoxy(42, 9); printf("_________    ___   ___     ________");
     gotoxy(42, 10); printf("|___  ___|   |  |  |  |    |  _____|");
     gotoxy(45, 11); printf("|  |      |  |--|  |    |  |_____");
@@ -168,6 +177,7 @@ void StartScreen() {
 
         if (_kbhit()) {
             b = _getch();
+            //printf("[%d]", b);
             if (b == 13) break;
         }
         SetColor(8); gotoxy(50, 26); printf("<<ENTER KEY TO START>>");

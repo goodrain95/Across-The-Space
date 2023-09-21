@@ -17,7 +17,7 @@ void Print_Maze(FILE* fp) {
 		if (c == 48) { SetColor(15);  printf(" "); }
 		if (c == 49) { SetColor(255);  printf("#"); }
 		if (c == '\n') { y++; gotoxy(0, y); }
-		//if (c == '2') { SetColor(12); printf("Ω"); }
+		if (c == '5') { SetColor(12); printf("Ω"); }
 		if (c == '3') { SetColor(13); printf("★"); }
 		if (c == '4') { SetColor(11);  printf("+"); }
 	}
@@ -32,20 +32,10 @@ int Whe_Obstacle(FILE* fp, int x, int y) {
 	if (character == '0') return 0;
 	else if (character == '3') return 3;
 	else if (character == '4') return 4;
+	else if (character == '5') return 5;
 	else return 1;
 }
 
-Weapon() {
-	gotoxy(45, 0); SetColor(11); printf("무기 획득!! 공격력이 00만큼 증가하였다!"); 
-	SetColor(15); Sleep(2000); 
-	gotoxy(45, 0);  printf("                                       ");
-}
-
-Potion() {
-	gotoxy(45, 0); SetColor(11); printf("물약 획득!! hp가 00만큼 증가하였다!"); 
-	SetColor(15); Sleep(2000);
-	gotoxy(45, 0);  printf("                                   ");
-}
 
 void Maze1() {
 	Reset_Screen();
@@ -69,6 +59,7 @@ void Maze1() {
 				gotoxy(x, --y); printf("U");
 				if (w == 3) Weapon();
 				else if (w == 4) Potion();
+				else if (w == 5) Fight_screen();
 				
 			}
 			else if (dir == DOWN) {
@@ -80,6 +71,7 @@ void Maze1() {
 				gotoxy(x, ++y); printf("U");
 				if (w == 3) Weapon();
 				else if (w == 4) Potion();
+				else if (w == 5) Fight_screen();
 
 			}
 			else if (dir == LEFT) {
@@ -91,6 +83,7 @@ void Maze1() {
 				gotoxy(--x, y); printf("U");
 				if (w == 3) Weapon();
 				else if (w == 4) Potion();
+				else if (w == 5) Fight_screen();
 			}
 			else if (dir == RIGHT) {
 				w = Whe_Obstacle(fp, x + 1, y);
@@ -102,6 +95,7 @@ void Maze1() {
 
 				if (w == 3) Weapon();
 				else if (w == 4) Potion();
+				else if (w == 5) Fight_screen();
 			}
 			if (x == 116 && y == 6) return;
 		}
