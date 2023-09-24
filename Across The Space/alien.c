@@ -12,6 +12,9 @@ int weapon_cnt = 0;
 int potion_cnt = 0;
 int fight_cnt = 0;
 
+int target_c;
+int hidden = 0;
+
 void Target_char() {
 	srand(time(NULL));
 	int target = rand() % 4 + 1;
@@ -53,30 +56,38 @@ void Target_char() {
 	}
 }
 
+Print_Option() {
+	gotoxy(97, 9); printf("My HP: %d", my_hp);
+	gotoxy(97, 10); printf("Alien HP: %d", alien_hp);
+	gotoxy(97, 11); printf("My Damage: %d", damage);
+
+}
 void Suc_or_Fail(int input) {
 	if (input == target_c) {
 		gotoxy(13, 5); printf("success!"); Sleep(500);
 		gotoxy(13, 5); printf("        ");
 		alien_hp -= damage;
+		Print_Options();
 
 	}
 
 	else {
 		gotoxy(15, 5); printf("fail!"); Sleep(500);
 		gotoxy(15, 5); printf("     ");
+		//printf("[%d] [%d]", input, target_c);
 	}
 
 	Clean_Screen(10, 5, 12, 9);
-	if (alien_hp <= 0) {
-		alien_hp = 0;
+	/*if (alien_hp <= 0) {
+		//alien_hp = 0;
 		goback();
-	}
+	}*/
 }
 
 void Fight() {
 	int a;
 	int alien_hp_max;
-	fight_cnt++;
+	/*fight_cnt++;
 	switch (fight_cnt) {
 	case 1:
 	case 2:
@@ -93,13 +104,11 @@ void Fight() {
 	case 10:
 	case 11:
 	case 12: alien_hp_max = 70; break;
-	}
+	}*/
 	
 	while(1) {
 		Target_char();
-
 		a = getch();
-		
 		Suc_or_Fail(a);
 		
 	}
@@ -111,16 +120,22 @@ void Fight_screen() {
 	SetColor(15);
 
 	BackGround();
+	Clean_Screen(20, 10, 7, 7);
+	Clean_Screen(20, 10, 93, 7);
 
 	BOX(60, 20, 30, 2);
 	BOX(20, 10, 7, 7);
+	BOX(20, 10, 93, 7);
 
+	Print_Option();
+	
 	Clean_Screen(17, 3, 52, 26);
 	Clean_Screen(5, 3, 58, 23);
+	
 	BOX(5, 3, 58, 23);
 	BOX(5, 3, 58, 26);
 	BOX(5, 3, 52, 26);
-	BOX(5, 3, 64, 26); 
+	BOX(5, 3, 64, 26);
 
 	SetColor(10);
 	gotoxy(60, 24); printf("W");
@@ -131,14 +146,23 @@ void Fight_screen() {
 	Fight();
 }
 
-Weapon() {
+void Weapon() { // ½º·¹µå Ã³¸® ÇØ¾ß µÊ
 	gotoxy(45, 0); SetColor(11); printf("¹«±â È¹µæ!! °ø°Ý·ÂÀÌ 00¸¸Å­ Áõ°¡ÇÏ¿´´Ù!");
-	SetColor(15); Sleep(2000);
+	SetColor(14); Sleep(2000);
 	gotoxy(45, 0);  printf("                                       ");
+	damage++;
 }
 
-Potion() {
+void Potion() {
 	gotoxy(45, 0); SetColor(11); printf("¹°¾à È¹µæ!! hp°¡ 00¸¸Å­ Áõ°¡ÇÏ¿´´Ù!");
-	SetColor(15); Sleep(2000);
+	SetColor(14); Sleep(2000);
 	gotoxy(45, 0);  printf("                                   ");
+	my_hp += 10;
+	if (my_hp >= 100) my_hp = 100;
+	
+}
+
+void Hidden_piece() {
+	gotoxy(55, 0); SetColor(11); printf("?? È¹µæ!!");
+	hidden = 1;
 }
