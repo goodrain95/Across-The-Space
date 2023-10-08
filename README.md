@@ -17,13 +17,16 @@ C언어 콘솔 게임
 미로에 있는 무기를 먹으면 외계인과 싸울 때 한 번의 공격에 깎이는 피가 증가한다.
 ### 히든 피스
 미로에 숨겨져 있는 히든 피스 획득 여부에 따라 엔딩이 결정된다.
+![스크린샷 2023-09-23 202103](https://github.com/goodrain95/Across-The-Space/assets/143669574/872687c8-1f60-41dc-9435-9724d9b28b20)
 
-## 미완료 버그
+# 미완료 버그
 ### 외계인들이 움직이는 스레드가 완벽하게 동작하지 않는다.
 아예 먹통이 되어버림!
 
 ## 개발 환경
 - 운영체제: WINDOWS 11
 - 프로그램: VISUAL STUDIO 2022
-  
+
 [Across The Space.pdf](https://github.com/goodrain95/Across-The-Space/files/12839497/Across.The.Space.pdf)
+
+
