@@ -23,7 +23,8 @@ void main() {
     Cursor(0);
     //CreateThread(NULL, 0, hello, 100, NULL, 0);
     StartScreen();
-    printf("end");
+    //gotoxy(47, 14); SetColor(11);
+    printf("Thankyou for Playing!!!!!!!");
     return 0;
 }
 

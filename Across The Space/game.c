@@ -10,17 +10,20 @@
 #define LEFT 75
 #define ENTER 13
 
-char Print[30][120];
-FILE* fp1;
-CRITICAL_SECTION g_cs;
+extern int hidden;
 
+char Print[30][120];
+FILE* cur_fp;
+
+CRITICAL_SECTION critical_section;
+/*
 typedef struct aliens{
 	int x;
 	int y;
 	int direct; // 0 는 좌우, 1은 위아래
 }ALIENS;
-ALIENS maze_lev1[17];
-
+ALIENS maze_lev1[2];
+*/
 void Print_Maze(FILE* fp) {
 	int a = 0;
 	int b = 0;
@@ -45,11 +48,11 @@ void Print_Maze(FILE* fp) {
 			if (p == 48) { SetColor(15);  printf(" "); }
 			if (p == 49) { SetColor(255);  printf("#"); }
 			if (p == '\n') { y++; gotoxy(0, y); }
-			if (p== '5') { SetColor(12); printf("Ω"); }
+			if (p == '2') { SetColor(13); printf("U"); }
+			if (p == '5') { SetColor(12); printf("Ω"); }
 			if (p == '3') { SetColor(10); printf("★"); }
 			if (p == '4') { SetColor(11);  printf("+"); }
 			if (p == '8') { SetColor(8); printf("?"); }
-			
 		}
 	}
 	SetColor(13);
@@ -67,28 +70,27 @@ void Print_Maze(FILE* fp) {
 	else if (character == '5') return 5;
 	else return 1;
 }*/
+
 int Whe_Obstacle(int x, int y) {
 	char character;
 	character = Print[y][x];
-	//gotoxy(1, 1);
-	//printf("%c", Print[4][5]);
 	if (character == '0') return 0;
 	else if (character == '3') return 3;
 	else if (character == '4') return 4;
 	else if (character == '5') return 5;
 	else if (character == '8') return 8;
-	else if (character == '9') return 9;
-	else return 1;
+	else if (character == '1') return 1;
+	//else if (character == '9') return 9;
+	//else return 2;
 }
+
 void Move(int x, int y) {
 	int dir, w;
 	int res;
 
-	//InitializeCriticalSection(&g_cs);
-
 	while (1) {
-		SetColor(14);
 		if (_kbhit()) {
+			EnterCriticalSection(&critical_section); SetColor(14);
 			dir = _getch();
 			if (dir == UP) {
 				w = Whe_Obstacle(x, y - 1);
@@ -98,31 +100,8 @@ void Move(int x, int y) {
 				gotoxy(x, y); printf(" ");
 				gotoxy(x, --y); printf("U");
 
-				switch (w) {
-				case 3: 
-					Weapon();
-					break;
-				case 4: 
-					Potion();
-					break;
-				case 5:
-					Fight_screen();
-					break;
-				case 8:
-					Hidden_piece();
-					break;
-				case 9:
-					return;
-				}
-			}
-			else if (dir == DOWN) {
-				w = Whe_Obstacle(x, y + 1);
-
-				if (w == 1) continue;
-				else if (y >= 29) continue;
-
-				gotoxy(x, y); printf(" ");
-				gotoxy(x, ++y); printf("U");
+				//Print[y][x] = '0';
+				//Print[--y][x] = '2';
 
 				switch (w) {
 				case 3:
@@ -137,8 +116,33 @@ void Move(int x, int y) {
 				case 8:
 					Hidden_piece();
 					break;
-				case 9:
-					return;
+				
+				}
+			}
+			else if (dir == DOWN) {
+				w = Whe_Obstacle(x, y + 1);
+
+				if (w == 1) continue;
+				else if (y >= 29) continue;
+
+				gotoxy(x, y); printf(" ");
+				gotoxy(x, ++y); printf("U");
+				//Print[y][x] = '0';
+				//Print[++y][x] = '2';
+
+				switch (w) {
+				case 3:
+					Weapon();
+					break;
+				case 4:
+					Potion();
+					break;
+				case 5:
+					Fight_screen();
+					break;
+				case 8:
+					Hidden_piece();
+					break;
 				}
 
 			}
@@ -150,6 +154,8 @@ void Move(int x, int y) {
 
 				gotoxy(x, y); printf(" ");
 				gotoxy(--x, y); printf("U");
+				//Print[y][x] = '0';
+				//Print[y][--x] = '2';
 
 				switch (w) {
 				case 3:
@@ -164,8 +170,6 @@ void Move(int x, int y) {
 				case 8:
 					Hidden_piece();
 					break;
-				case 9:
-					return;
 				}
 			}
 			else if (dir == RIGHT) {
@@ -175,6 +179,8 @@ void Move(int x, int y) {
 				//if (x >= 119) continue;
 				gotoxy(x, y); printf(" ");
 				gotoxy(++x, y); printf("U");
+				//Print[y][x] = '0';
+				//Print[y][++x] = '2';
 
 				switch (w) {
 				case 3:
@@ -189,66 +195,121 @@ void Move(int x, int y) {
 				case 8:
 					Hidden_piece();
 					break;
-				case 9:
-					return;
 				}
 			}
+			SetColor(255);
+			LeaveCriticalSection(&critical_section);
 		}
+		
 	}
-	//DeleteCriticalSection(&g_cs);
+	
 }
 
 unsigned int __stdcall EnemyMove (void* data) {
 	int* parameters = (int*)data; //void*를 int*로 형 변환해줘야 함.
-	int x = parameters[0]; //9
-	int y = parameters[1]; //12
+	int x = parameters[0]; 
+	int y = parameters[1]; 
 	int direct = parameters[2];
-
+	//gotoxy(0, 0); printf("%d %d", parameters[0], parameters[1]);
 	int a = 1;
 
 	if (direct == 0) {
 		while (1) {
-			EnterCriticalSection(&g_cs);
+			/*EnterCriticalSection(&g_cs);
 			
-			gotoxy(x, y); printf("Ω"); Print[y][x] = '5'; Sleep(1000);
+			gotoxy(x, y); printf("Ω"); Print[y][x] = '5'; Sleep(100);
 			gotoxy(x, y); printf(" "); Print[y][x] = '0';
 
 			LeaveCriticalSection(&g_cs);
 			x += a;
 
 			if (Print[y][x] == '1') { a *= -1; x += 2 * a;}
-
+			*/
+			EnterCriticalSection(&critical_section);
+			Print[y][x] = '0';
+			if (Print[y][x + a] == '1') a *= -1;
+			x += a;
+			Print[y][x] = '5';
+			//if (Print[y][x + a] == '1') a *= -1;
+			LeaveCriticalSection(&critical_section);
 			
+			Sleep(200);
 		}
 	}
 	if (direct == 1) {
 		while (1) {
-			EnterCriticalSection(&g_cs);
+			/*EnterCriticalSection(&g_cs);
 
-			gotoxy(x, y); printf("Ω"); Print[y][x] = '5'; Sleep(1000);
+			gotoxy(x, y); printf("Ω"); Print[y][x] = '5'; Sleep(100);
 			gotoxy(x, y); printf(" "); Print[y][x] = '0';
 			
 			LeaveCriticalSection(&g_cs);
 			y += a;
 
 			if (Print[y][x] == '1') { a *= -1; y += 2 * a;}
-
+			*/
+			EnterCriticalSection(&critical_section);
+			Print[y][x] = '0';
+			if (Print[y + a][x] == '1') a *= -1;
+			y += a;
+			Print[y][x] = '5';
 			
+			LeaveCriticalSection(&critical_section);
+			//if (Print[y + a][x]) a *= -1;
+			Sleep(200);
 		}
 	}
+	return NULL;
 }
 
+unsigned int __stdcall PrintEnemy(void* arg) {
+	int a, b;
+	int i, j, y = 0;
+	char p;
+	int count = 0;
+	while(1) {
+		EnterCriticalSection(&critical_section);
+		
+		SetColor(15);
+		gotoxy(0, 0);
+		//Print_Maze(cur_fp);
+		for (i = 0; i < 30; i++) {
+			for (j = 0; j < 120; j++) {
+				p = Print[i][j];
+				
+				if (p == 48) { SetColor(15);  printf(" "); }
+				if (p == 49) { SetColor(255);  printf("#"); }
+				if (p == '\n') { printf("\n"); }
+				if (p == '2') { SetColor(13); printf("U"); }
+				if (p == '5') { SetColor(12); printf("Ω"); }
+				if (p == '3') { SetColor(10); printf("★"); }
+				if (p == '4') { SetColor(11);  printf("+"); }
+				if (p == '8') { SetColor(8); printf("?"); }
+				
+			}
+			
+		}
+		//SetColor(11);  gotoxy(0, 0); printf("%d", count); printf("%d", y);
+		LeaveCriticalSection(&critical_section);
+		count++;
+		Sleep(100);
+	}
+	return NULL;
+}
 
 void Maze1() {
 	Reset_Screen();
-	fp1 = fopen("C:\\Users\\goodr\\source\\repos\\Across The Space\\Maze_Level_1.txt", "r");
-	
-	int parameters[17][3];
+	FILE* fp1 = fopen("C:\\Users\\goodr\\source\\repos\\Across The Space\\Maze_Level_1.txt", "r");
+	cur_fp = fp1;
+
+	int parameters[18][3];
 	int i;
-	HANDLE threadHandle[17];
+	HANDLE threadHandle[3];
 
+	Print_Maze(cur_fp);
 	
-
+	InitializeCriticalSection(&critical_section);
+	
 	/*maze_lev1[0].x = 9;
 	maze_lev1[0].y = 12;
 	maze_lev1[0].direct = 0;
@@ -272,34 +333,32 @@ void Maze1() {
 	parameters[12][0] = 101; parameters[12][1] = 8; parameters[12][2] = 1;
 	parameters[13][0] = 102; parameters[13][1] = 8; parameters[13][2] = 0;
 	parameters[14][0] = 106; parameters[14][1] = 14; parameters[14][2] = 0;
-	parameters[15][0] = 110; parameters[15][1] = 26; parameters[15][2] = 0;
+	parameters[15][0] = 96; parameters[15][1] = 26; parameters[15][2] = 0;
 	parameters[16][0] = 112; parameters[16][1] = 21; parameters[16][2] = 1;
 
-	Print_Maze(fp1);
-	gotoxy(3, 3); SetColor(14);  printf("U");
 	
-	InitializeCriticalSection(&g_cs);
+	gotoxy(3, 3); SetColor(14); printf("U");
+
 
 	for (i = 0; i < 17; i++) {
-		
-	
 		threadHandle[i] = (HANDLE)_beginthreadex(NULL, 0, EnemyMove, parameters[i], 0, NULL);
-		
 	}
-
+	threadHandle[i] = (HANDLE)_beginthreadex(NULL, 0, PrintEnemy, NULL, 0, NULL);
+	
 	Move(3, 3);
 
-	WaitForMultipleObjects(17, threadHandle, TRUE, INFINITE);
+	WaitForMultipleObjects(18, threadHandle, TRUE, INFINITE);
 
-	for (i = 0; i < 17; i++) {
+	for (i = 0; i < 18; i++) {
 		CloseHandle(threadHandle[i]);
 	}
-	DeleteCriticalSection(&g_cs);
-	Move(3, 3);
-	fclose(fp1);
+	
+	DeleteCriticalSection(&critical_section);
+
+	fclose(cur_fp);
 }
 
-void Maze2() {
+/*void Maze2() {
 	Reset_Screen();
 	FILE* fp2 = fopen("C:\\Users\\goodr\\OneDrive\\문서\\Maze_Level_2.txt", "r");
 	int i;
@@ -327,7 +386,7 @@ void Maze2() {
 	Print_Maze(fp2);
 	gotoxy(3, 3); SetColor(14);  printf("U");
 
-	InitializeCriticalSection(&g_cs);
+	//InitializeCriticalSection(&g_cs);
 
 	for (i = 0; i < 17; i++) {
 		threadHandle[i] = (HANDLE)_beginthreadex(NULL, 0, EnemyMove, parameters[i], 0, NULL);
@@ -341,10 +400,10 @@ void Maze2() {
 	for (i = 0; i < 17; i++) {
 		CloseHandle(threadHandle[i]);
 	}
-	DeleteCriticalSection(&g_cs);
+	//DeleteCriticalSection(&g_cs);
 	
 	fclose(fp2);
-}
+}*/
 
 void Maze3() {
 	Reset_Screen();
@@ -362,4 +421,6 @@ void GameStart() {
 	Maze1();
 	//Maze2();
 	//Maze3();
+	//Ending(hidden);
+	printf("end");
 }

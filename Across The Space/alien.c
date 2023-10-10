@@ -5,7 +5,7 @@
 int damage = 1;
 
 int target_c;
-int alien_hp;
+int alien_hp = 100;
 int my_hp = 100;
 
 int weapon_cnt = 0;
@@ -62,12 +62,12 @@ Print_Option() {
 	gotoxy(97, 11); printf("My Damage: %d", damage);
 
 }
-void Suc_or_Fail(int input) {
+void Suc_or_Fail(char input) {
 	if (input == target_c) {
 		gotoxy(13, 5); printf("success!"); Sleep(500);
 		gotoxy(13, 5); printf("        ");
 		alien_hp -= damage;
-		Print_Options();
+		Print_Option();
 
 	}
 
@@ -85,7 +85,7 @@ void Suc_or_Fail(int input) {
 }
 
 void Fight() {
-	int a;
+	char a;
 	int alien_hp_max;
 	/*fight_cnt++;
 	switch (fight_cnt) {
@@ -143,6 +143,7 @@ void Fight_screen() {
 	gotoxy(54, 27); printf("A");
 	gotoxy(66, 27); printf("D");
 
+	Print_Option();
 	Fight();
 }
 
@@ -165,4 +166,37 @@ void Potion() {
 void Hidden_piece() {
 	gotoxy(55, 0); SetColor(11); printf("?? 획득!!");
 	hidden = 1;
+}
+
+void Ending(int hidden) {
+	Reset_Screen();
+	int b;
+
+	gotoxy(50, 1); SetColor(11); printf("GAME ENDING");
+
+	gotoxy(1, 4); SetColor(15);
+
+	if (hidden == 1) {
+		printf("지구에 다시 돌아오는데 성공하였다!!! \n"
+			"하지만 지구는 이미 시간이 훨씬 지난 뒤였다. 엄청난 과학적 진보를 이루었지만, 과학자들은 아아주 멀리에 있는 우주에도 순식간에 갈 수 있는 방법을 찾느라 매우 애먹고 있었다.\n"
+			"근데 주인공이 가져온 히든피스가 알고보니 이를 가능하게 해주는 웜홀을 인공적으로 만드는 데 필요한 엄청난 원석이어던 것..!!\n"
+			"주인공은 엄청나게 유명해지고 웜홀 게이트는 주인공의 이름을 따서 지어졌다.\n"
+			"Happy Ending!!");
+	}
+	else {
+		printf("지구에 다시 돌아오는데 성공하였다"
+			"하지만 지구는 멸망 바로 직전이다.. 주인공이 출발했을 때ㅗ보다 시간이 훨씬 많이 지났고, 곳곳이 불타고 있으며 사람의 흔적이 없었다.\n"
+			"가족들의 생사 역시 알 수 없자 주인공은 그토록 힘들게 도착한 지구가 이런 모습인 것에 비관하고 투신한다..\n"
+			"Bad Ending.");
+	}
+
+	while (1) {
+		if (_kbhit()) {
+			b = _getch();
+			if (b == 13) {
+				break;
+			}
+		}
+	}
+	return;
 }
