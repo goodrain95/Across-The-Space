@@ -5,7 +5,7 @@
 int damage = 1;
 
 int target_c;
-int alien_hp = 100;
+int alien_hp = 4;
 int my_hp = 100;
 
 int weapon_cnt = 0;
@@ -14,6 +14,7 @@ int fight_cnt = 0;
 
 int target_c;
 int hidden = 0;
+int stop = 0;
 
 void Target_char() {
 	srand(time(NULL));
@@ -68,6 +69,7 @@ void Suc_or_Fail(char input) {
 		gotoxy(13, 5); printf("        ");
 		alien_hp -= damage;
 		Print_Option();
+		
 
 	}
 
@@ -110,15 +112,17 @@ void Fight() {
 		Target_char();
 		a = getch();
 		Suc_or_Fail(a);
+		if (alien_hp == 0) break;
 		
 	}
 }
 
 void Fight_screen() {
+	Sleep(500);
 	Reset_Screen();
 
 	SetColor(15);
-
+	alien_hp = 4;
 	BackGround();
 	Clean_Screen(20, 10, 7, 7);
 	Clean_Screen(20, 10, 93, 7);
@@ -145,6 +149,7 @@ void Fight_screen() {
 
 	Print_Option();
 	Fight();
+	return;
 }
 
 void Weapon() { // 스레드 처리 해야 됨

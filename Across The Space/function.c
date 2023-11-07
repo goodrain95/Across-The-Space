@@ -11,41 +11,24 @@ void SetColor(int color) { // 프린트 문자 색 조종
     SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), color);
 }
 
+
 void BOX(int WIDTH, int HIGHT, int X, int Y) { //사이즈, 시작 위치를 입력하면 그 크기의 네모박스를 만듦.
     int i;
     gotoxy(X, Y);
     for (i = X; i < WIDTH + X; i++) {
-        printf("%c", 1);
+        printf("□");
     }
     for (i = Y; i < HIGHT + Y - 1; i++) {
         gotoxy(X, i);
-        printf("%c", 1);
+        printf("□");
         gotoxy(X + WIDTH - 1, i);
-        printf("%c", 1);
+        printf("□");
     }
     gotoxy(X, HIGHT + Y - 1);
     for (i = X; i < WIDTH + X; i++) {
-        printf("%c", 1);
+        printf("□");
     }
 }
-
-/*void BOX(int WIDTH, int HIGHT, int X, int Y) { //사이즈, 시작 위치를 입력하면 그 크기의 네모박스를 만듦.
-    int i;
-    gotoxy(X, Y);
-    for (i = X; i < WIDTH + X; i++) {
-        printf("-");
-    }
-    for (i = Y; i < HIGHT + Y - 1; i++) {
-        gotoxy(X, i);
-        printf("|");
-        gotoxy(X + WIDTH - 1, i);
-        printf("|");
-    }
-    gotoxy(X, HIGHT + Y - 1);
-    for (i = X; i < WIDTH + X; i++) {
-        printf("-");
-    }
-}*/
 
 void Cursor(BOOL n) { // 커서를 보이게 할지 안보이게 할지 결정
     CONSOLE_CURSOR_INFO c;

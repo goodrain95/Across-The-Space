@@ -18,6 +18,7 @@ void Manual();
     }
 }*/
 
+
 void main() {
     system("mode con cols=120 lines=30");
     Cursor(0);
